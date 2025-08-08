@@ -73,3 +73,14 @@ Wenn du das Projekt initialisieren sollst, beginne mit:
 > Projektname-Vorschlag: "**ExoGenesis**" oder "**Millenia Prime**"
 
 Let’s build the space legacy! 🚀
+
+## Lokal starten
+
+Um den Entwicklungsserver zu starten:
+
+```bash
+npm install
+npm run dev
+```
+
+Dies startet einen Vite-Server, der `index.html` unter http://localhost:5173 bereitstellt.
