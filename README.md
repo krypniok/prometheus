@@ -1,8 +1,9 @@
 # Projektidee: Deuteros/Millennium/Supremacy Hybrid
 
-## Ziel
+## Ziel / Objective
 
 Ein futuristisches Strategiespiel im Stil von *Deuteros*, *Millennium 2.2* und *Supremacy* – vollständig im Webbrowser spielbar per **WebGL**, mit **Grafiken**, **Sound**, und optional **Touch/Controller-Support**.
+A futuristic strategy game inspired by *Deuteros*, *Millennium 2.2*, and *Supremacy* – fully playable in the web browser via **WebGL** with **graphics**, **sound**, and optional **touch/controller support**.
 
 ## Kernfeatures (erste Iteration)
 
@@ -23,22 +24,50 @@ Ein futuristisches Strategiespiel im Stil von *Deuteros*, *Millennium 2.2* und *
 * 🎨 Assets: Spritesheets & Texturen (BMP/PNG), Audio (OGG/WAV)
 * 🔧 Code in **JavaScript (ES6+)** mit Modulstruktur
 
-## Projektphasen
+## Projektstruktur / Project Structure
+
+- `src/` – Spiel- und UI-Code
+- `assets/` – Grafiken, Texturen und Audio
+- `index.html` – Einstiegspunkt für den Browser
+- `package.json` – Projektkonfiguration und npm-Skripte
+
+## Installation
+
+1. [Node.js](https://nodejs.org/) (empfohlen: v18+) installieren.
+2. Abhängigkeiten installieren:
+   ```bash
+   npm install
+   ```
+
+## Lokale Entwicklung / Local Development
+
+```bash
+npm run dev
+```
+
+Dies startet einen Vite-Server und stellt `index.html` unter http://localhost:5173 bereit.
+
+## Build
+
+```bash
+npm run build
+```
+
+Die gebauten Dateien werden im Verzeichnis `dist/` abgelegt und können von jedem statischen Webserver ausgeliefert werden.
+
+## Roadmap / Projektphasen
 
 1. **Prototyp UI** mit Platzhaltergrafiken:
-
    * Hauptmenü
    * Sternensystem mit Planeten
    * Ressourcenfenster + Produktionsliste
 
 2. **Gameplay-Logik entwickeln:**
-
    * Echtzeit- vs. Rundenlogik entscheiden
    * Ressourcenkreisläufe simulieren
    * Ereignisse (Meteoriten, Rebellionen, KI-Angriffe)
 
 3. **Grafik & Sound integrieren:**
-
    * GUI-Skins im Retro-Stil
    * Audio für Klicks, Musik, Ambient
 
@@ -48,7 +77,7 @@ Ein futuristisches Strategiespiel im Stil von *Deuteros*, *Millennium 2.2* und *
 
 ---
 
-## Noch zu klären:
+## Noch zu klären / Open Questions
 
 * Welche Perspektive fürs Hauptspiel? (z. B. isometrisch? komplett 3D? Split-View?)
 * Wie komplex soll KI-Interaktion werden? (diplomatisch, militärisch, wirtschaftlich)
@@ -58,7 +87,11 @@ Ein futuristisches Strategiespiel im Stil von *Deuteros*, *Millennium 2.2* und *
 
 ---
 
-## Hinweis an Codex:
+## Beitragende / Contributions
+
+Beiträge sind willkommen! Ein ausführlicher Leitfaden folgt. Bis dahin gerne Issues oder Pull Requests eröffnen.
+
+## Hinweis an Codex
 
 Wenn du das Projekt initialisieren sollst, beginne mit:
 
@@ -73,14 +106,3 @@ Wenn du das Projekt initialisieren sollst, beginne mit:
 > Projektname-Vorschlag: "**ExoGenesis**" oder "**Millenia Prime**"
 
 Let’s build the space legacy! 🚀
-
-## Lokal starten
-
-Um den Entwicklungsserver zu starten:
-
-```bash
-npm install
-npm run dev
-```
-
-Dies startet einen Vite-Server, der `index.html` unter http://localhost:5173 bereitstellt.
