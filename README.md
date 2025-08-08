@@ -89,7 +89,9 @@ Die gebauten Dateien werden im Verzeichnis `dist/` abgelegt und können von jede
 
 ## Beitragende / Contributions
 
-Beiträge sind willkommen! Ein ausführlicher Leitfaden folgt. Bis dahin gerne Issues oder Pull Requests eröffnen.
+Beiträge sind willkommen! Hinweise zum Beitrag findest du in [CONTRIBUTING.md](CONTRIBUTING.md). Lizenzinformationen stehen in der [LICENSE](LICENSE).
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and the [LICENSE](LICENSE) for licensing.
 
 ## Hinweis an Codex
 
