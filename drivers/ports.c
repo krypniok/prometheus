@@ -35,3 +35,7 @@ unsigned short port_word_in(uint16_t port) {
 void port_word_out(uint16_t port, uint16_t data) {
     asm("out %%ax, %%dx" : : "a" (data), "d" (port));
 }
+
+void io_wait() {
+    asm volatile("out %%al, $0x80" : : "a"(0));
+}

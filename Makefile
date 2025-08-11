@@ -37,7 +37,7 @@ CPU32  := $(if $(QEMU32),, -cpu qemu32)
 # nutzt das, was dein QEMU kann. PC-Speaker wird an denselben Audiodev gehängt.
 AUDIO_DRV := $(shell \
   if [ -n "$(QEMU)" ]; then \
-    "$(QEMU)" -audio-help 2>/dev/null | awk '/Available audio drivers:/{ok=1;next} ok{gsub(",","");print}' \
+    "$(QEMU)" -audio help 2>/dev/null | awk '/Available audio drivers:/{ok=1;next} ok{gsub(",","");print}' \
     | tr ' ' '\n' | grep -E '^(pa|pipewire|alsa|sdl)$$' | head -n1 ; \
   fi)
 
@@ -74,13 +74,13 @@ kernel.elf: boot/kernel_entry.o ${OBJ_FILES}
 
 debug: os-image.bin kernel.elf
 	@if [ -z "$(QEMU)" ]; then echo "QEMU fehlt (install qemu-system-x86)"; exit 127; fi
-	$(QEMU) $(RUNFLAGS) -s -S -d guest_errors,int -fda disk_image.img -boot a &
+	$(QEMU) $(RUNFLAGS) $(SOUND) -s -S -d guest_errors,int -fda disk_image.img -boot a &
 	gdb -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 test-env:
 	@echo "QEMU  : $(QEMU)"; \
 	 echo "AUDIO : $(if $(AUDIO_DRV),$(AUDIO_DRV),none)"; \
-	 $(if $(QEMU),$(QEMU) -audio-help | sed -n '1,80p',echo "QEMU not found")
+	 $(if $(QEMU),$(QEMU) -audio help | sed -n '1,80p',echo "QEMU not found")
 
 # --- Compile rules ---
 %.o: %.c ${HEADERS}

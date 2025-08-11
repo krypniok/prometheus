@@ -1,3 +1,6 @@
+#include "../drivers/ports.h"
+#include "../cpu/timer.h"
+
 #define DTMF_0_FREQ 941
 #define DTMF_1_FREQ 697
 #define DTMF_2_FREQ 770
@@ -42,9 +45,23 @@ void console_sound_off() {
  
 // Make a beep
 void beep(int freq, int ms) {
+    if (GetTicks() == 0) {
+        init_timer(1000);
+    }
+
     console_sound_on();
     console_play_sound(freq);
+
+    unsigned int start = GetTicks();
     sleep(ms);
+    unsigned int end = GetTicks();
+
+    if (end == start) {
+        for (int i = 0; i < ms * 1000; i++) {
+            io_wait();
+        }
+    }
+
     console_sound_off();
 }
 
