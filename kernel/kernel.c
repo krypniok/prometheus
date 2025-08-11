@@ -631,6 +631,7 @@ void execute_command(char *input) {
     CALL_FUNCTION(ll_main)
     CALL_FUNCTION(setpal)
     CALL_FUNCTION(snake_main)
+    CALL_FUNCTION(sb16_demo)
     CALL_FUNCTION(random)
     CALL_FUNCTION(uptime)
     CALL_FUNCTION(hidecursor)
