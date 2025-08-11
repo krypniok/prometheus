@@ -42,8 +42,8 @@ AUDIO_DRV := $(shell \
   fi)
 
 ifeq ($(strip $(AUDIO_DRV)),)
-  $(warning Kein QEMU-Audio-Treiber erkannt. Starte ohne Sound.)
-  SOUND :=
+  $(warning Kein QEMU-Audio-Treiber erkannt. Starte mit stummem SB16.)
+  SOUND := -device sb16
 else
   AUDIODEV := -audiodev $(AUDIO_DRV),id=snd
   SOUND := $(AUDIODEV) -device sb16,audiodev=snd -machine pcspk-audiodev=snd
@@ -58,12 +58,12 @@ run: os-image.bin
 	dd if=os-image.bin of=disk_image.img conv=notrunc
 	dd if=test.pc of=disk_image.img bs=1 seek=1048576 conv=notrunc
 	@if [ -z "$(QEMU)" ]; then echo "QEMU fehlt (install qemu-system-x86)"; exit 127; fi
-	$(QEMU) $(RUNFLAGS) $(SOUND) -fda disk_image.img -boot a
+	$(QEMU) $(RUNFLAGS) $(SOUND) -drive file=disk_image.img,if=floppy,format=raw -boot a
 	dd if=disk_image.img of=test.pc bs=1 skip=1048576 count=951
 
 rerun:
 	@if [ -z "$(QEMU)" ]; then echo "QEMU fehlt (install qemu-system-x86)"; exit 127; fi
-	$(QEMU) $(RUNFLAGS) $(SOUND) -fda disk_image.img -boot a
+	$(QEMU) $(RUNFLAGS) $(SOUND) -drive file=disk_image.img,if=floppy,format=raw -boot a
 
 echo: os-image.bin
 	xxd $<
@@ -74,7 +74,7 @@ kernel.elf: boot/kernel_entry.o ${OBJ_FILES}
 
 debug: os-image.bin kernel.elf
 	@if [ -z "$(QEMU)" ]; then echo "QEMU fehlt (install qemu-system-x86)"; exit 127; fi
-	$(QEMU) $(RUNFLAGS) $(SOUND) -s -S -d guest_errors,int -fda disk_image.img -boot a &
+	$(QEMU) $(RUNFLAGS) $(SOUND) -s -S -d guest_errors,int -drive file=disk_image.img,if=floppy,format=raw -boot a &
 	gdb -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 test-env:

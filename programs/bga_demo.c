@@ -34,7 +34,12 @@ int bga_demo() {
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, BGA_ENABLED | BGA_LFB_ENABLED);
 
-    uint32_t *lfb = (uint32_t *)0xE0000000; // Standard LFB address in QEMU
+    /* Determine linear frame buffer address */
+    port_word_out(BGA_INDEX_PORT, 0x09);
+    uint16_t lfb_low = port_word_in(BGA_DATA_PORT);
+    port_word_out(BGA_INDEX_PORT, 0x0A);
+    uint16_t lfb_high = port_word_in(BGA_DATA_PORT);
+    uint32_t *lfb = (uint32_t *)(((uint32_t)lfb_high << 16) | lfb_low);
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
             uint8_t r = (x * 255) / width;
@@ -44,6 +49,14 @@ int bga_demo() {
         }
     }
 
+    return 0;
+}
+
+int txt() {
+    /* Disable BGA and return to text mode */
+    port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
+    port_word_out(BGA_DATA_PORT, 0);
+    clear_screen();
     return 0;
 }
 
