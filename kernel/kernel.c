@@ -595,9 +595,9 @@ int writehdd(int s, int c) {
 #define GIGABYTE 1073741824
 
 void hddtest() {
-    for(unsigned int i=0; i<2880; i++) {
-        read_from_disk(i, (void*)0x100000+(512*i), 512);
-    }
+    // Lade test.pc, das ab Sektor 2048 (1 MiB) liegt, nach 0x100000
+    read_from_disk(2048, (void*)0x100000, 951);
+    printf("test.pc geladen. Starte mit 'run 0x100000'\n");
 }
 
 void hddtest2() {
