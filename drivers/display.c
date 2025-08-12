@@ -44,6 +44,43 @@ int setpal() {
     return 0;
 }
 
+void load_vga_font(const uint8_t *font, size_t height) {
+    port_byte_out(0x3C4, 0x02);
+    port_byte_out(0x3C5, 0x04);
+    port_byte_out(0x3C4, 0x04);
+    port_byte_out(0x3C5, 0x06);
+
+    port_byte_out(0x3CE, 0x04);
+    port_byte_out(0x3CF, 0x02);
+    port_byte_out(0x3CE, 0x05);
+    port_byte_out(0x3CF, 0x00);
+    port_byte_out(0x3CE, 0x06);
+    port_byte_out(0x3CF, 0x00);
+
+    uint8_t *plane2 = (uint8_t *)0xA0000;
+    for (int ch = 0; ch < 256; ch++) {
+        size_t i = 0;
+        for (; i < height; i++) {
+            plane2[ch * 32 + i] = font[ch * height + i];
+        }
+        for (; i < 32; i++) {
+            plane2[ch * 32 + i] = 0x00;
+        }
+    }
+
+    port_byte_out(0x3C4, 0x02);
+    port_byte_out(0x3C5, 0x03);
+    port_byte_out(0x3C4, 0x04);
+    port_byte_out(0x3C5, 0x02);
+
+    port_byte_out(0x3CE, 0x04);
+    port_byte_out(0x3CF, 0x00);
+    port_byte_out(0x3CE, 0x05);
+    port_byte_out(0x3CF, 0x10);
+    port_byte_out(0x3CE, 0x06);
+    port_byte_out(0x3CF, 0x0E);
+}
+
 void set_color(unsigned char c) { g_ConsoleColor = c; }
 unsigned char get_color(unsigned char c) { return g_ConsoleColor; }
 

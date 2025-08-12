@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdint.h>
 #include "../cpu/isr.h"
 
 #define VIDEO_ADDRESS       0xB8000
@@ -89,3 +90,5 @@ void print_registers();
 
 int setpal();
 int get_offset(int col, int row);
+
+void load_vga_font(const uint8_t *font, size_t height);

@@ -3,6 +3,7 @@
 #include "../drivers/video.h"
 #include "../kernel/util.h"
 #include "../kernel/mem.h"
+#include "../drivers/font8x16.h"
 
 void showcursor();
 
@@ -136,6 +137,8 @@ int txt() {
 
     /* Reprogram VGA registers back to text mode */
     write_registers(text_mode_80x25);
+
+    load_vga_font(font8x16, 16);
 
     /* Reload default palette and console state */
     setpal();
