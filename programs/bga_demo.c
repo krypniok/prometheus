@@ -2,6 +2,7 @@
 #include "../drivers/display.h"
 #include "../drivers/video.h"
 #include "../kernel/util.h"
+#include "../kernel/mem.h"
 
 void showcursor();
 
@@ -115,7 +116,7 @@ int bga_demo() {
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, BGA_ENABLED | BGA_LFB_ENABLED);
 
-    volatile uint32_t *lfb = (volatile uint32_t *)0xE0000000;
+    volatile uint32_t *lfb = framebuffer;
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
             uint8_t r = (x * 255) / width;

@@ -111,6 +111,9 @@ void start_kernel() {
 
         init_memory();
 
+        init_paging();
+        map_framebuffer(0xE0000000, 0xE0000000, 4 * 1024 * 1024);
+
      //   print_string("A20 Line was activated by the MBR.\n");
         // enable_a20_line();
 
