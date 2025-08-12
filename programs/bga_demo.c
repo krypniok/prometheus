@@ -124,8 +124,8 @@ int test_framebuffer() {
 
     volatile uint32_t *lfb = map_framebuffer(0xE0000000, 0xE0000000, width * height * (bpp / 8));
     if (lfb == NULL_POINTER) {
-        printf("Framebuffer mapping failed\n");
         txt();
+        printf("Framebuffer mapping failed\n");
         return -1;
     }
 
@@ -145,15 +145,15 @@ int test_framebuffer() {
     for (int i = 0; i < 3; i++) {
         uint32_t val = lfb[tests[i].offset / 4];
         if (val != tests[i].pattern) {
+            txt();
             printf("Framebuffer test failed at offset 0x%X: wrote 0x%X, read 0x%X\n",
                    tests[i].offset, tests[i].pattern, val);
-            txt();
             return -1;
         }
     }
 
-    printf("Framebuffer test passed\n");
     txt();
+    printf("Framebuffer test passed\n");
     return 0;
 }
 
@@ -214,14 +214,12 @@ int bga_demo() {
  * If graphics mode isn't active, this just resets the console state.
  */
 int txt() {
-    if (bga_active) {
-        /* Disable BGA controller */
-        port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
-        port_word_out(BGA_DATA_PORT, 0);
+    /* Disable BGA controller */
+    port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
+    port_word_out(BGA_DATA_PORT, 0);
 
-        /* Reprogram VGA registers back to text mode */
-        write_registers(text_mode_80x25);
-    }
+    /* Reprogram VGA registers back to text mode */
+    write_registers(text_mode_80x25);
 
     /* Reinitialise VGA state after mode switch */
     init_video();
