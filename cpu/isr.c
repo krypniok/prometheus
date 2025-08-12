@@ -123,8 +123,10 @@ void isr_handler(registers_t *r) {
     print_string(exception_messages[r->int_no]);
     print_nl();
 
-    isr_t handler = interrupt_handlers[IRQ10];
-    handler(r);
+    if (interrupt_handlers[r->int_no]) {
+        isr_t handler = interrupt_handlers[r->int_no];
+        handler(r);
+    }
 }
 
 void register_interrupt_handler(uint8_t n, isr_t handler) {

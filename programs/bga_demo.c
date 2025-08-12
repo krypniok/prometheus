@@ -1,5 +1,6 @@
 #include "../drivers/ports.h"
 #include "../drivers/display.h"
+#include "../drivers/video.h"
 #include "../kernel/util.h"
 
 #define BGA_INDEX_PORT 0x1CE
@@ -14,6 +15,8 @@
 #define BGA_LFB_ENABLED    0x40
 
 int bga_demo() {
+    init_video();
+
     uint16_t width = 800;
     uint16_t height = 600;
     uint16_t bpp = 32;
@@ -40,7 +43,7 @@ int bga_demo() {
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, BGA_ENABLED | BGA_LFB_ENABLED);
 
-    uint32_t *lfb = (uint32_t *)0xE0000000;
+    volatile uint32_t *lfb = (volatile uint32_t *)0xE0000000;
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
             uint8_t r = (x * 255) / width;
@@ -57,9 +60,6 @@ int txt() {
     /* Disable BGA and return to VGA text mode */
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, 0);
-
-    /* BIOS call to set 80x25 text mode */
-    asm volatile("mov $0x0003, %%ax; int $0x10" ::: "ax");
 
     clear_screen();
     return 0;
