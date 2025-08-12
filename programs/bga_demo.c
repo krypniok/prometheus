@@ -118,6 +118,12 @@ int bga_demo() {
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, BGA_ENABLED | BGA_LFB_ENABLED);
 
+    if (framebuffer == NULL_POINTER) {
+        if (map_framebuffer(0xE0000000, 0xE0000000, width * height * (bpp / 8)) == NULL_POINTER) {
+            printf("Framebuffer mapping failed\n");
+            return -1;
+        }
+    }
     volatile uint32_t *lfb = framebuffer;
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
