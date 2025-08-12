@@ -14,6 +14,72 @@
 #define BGA_ENABLED        0x01
 #define BGA_LFB_ENABLED    0x40
 
+/*
+ * VGA register setup taken from the OSDev wiki to switch the card back
+ * to the classic 80x25 text mode.  This is required after the BGA has
+ * been enabled because simply disabling the BGA controller does not fully
+ * restore the VGA state.  Without reprogramming the registers the screen
+ * would stay in graphics mode and our text routines writing to 0xB8000
+ * would remain invisible.
+ */
+static unsigned char text_mode_80x25[] = {
+    /* MISC */
+    0x67,
+    /* SEQ */
+    0x03, 0x00, 0x03, 0x00, 0x02,
+    /* CRTC */
+    0x5F, 0x4F, 0x50, 0x82, 0x55, 0x81, 0xBF, 0x1F,
+    0x00, 0x4F, 0x0D, 0x0E, 0x00, 0x00, 0x00, 0x50,
+    0x9C, 0x0E, 0x8F, 0x28, 0x40, 0x96, 0xB9, 0xA3,
+    0xFF,
+    /* GC */
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x0E, 0x00, 0xFF,
+    /* AC */
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+    0x41, 0x00, 0x0F, 0x00, 0x00
+};
+
+static void write_registers(unsigned char *regs) {
+    unsigned int i;
+
+    /* MISC */
+    port_byte_out(0x3C2, *regs++);
+
+    /* SEQ */
+    for (i = 0; i < 5; i++) {
+        port_byte_out(0x3C4, i);
+        port_byte_out(0x3C5, *regs++);
+    }
+
+    /* Unlock CRTC registers */
+    port_byte_out(0x3D4, 0x03);
+    port_byte_out(0x3D5, port_byte_in(0x3D5) | 0x80);
+    port_byte_out(0x3D4, 0x11);
+    port_byte_out(0x3D5, port_byte_in(0x3D5) & ~0x80);
+
+    /* CRTC */
+    for (i = 0; i < 25; i++) {
+        port_byte_out(0x3D4, i);
+        port_byte_out(0x3D5, *regs++);
+    }
+
+    /* GC */
+    for (i = 0; i < 9; i++) {
+        port_byte_out(0x3CE, i);
+        port_byte_out(0x3CF, *regs++);
+    }
+
+    /* AC */
+    for (i = 0; i < 21; i++) {
+        port_byte_out(0x3C0, i);
+        port_byte_out(0x3C0, *regs++);
+    }
+
+    /* Lock palette and unblank */
+    port_byte_out(0x3C0, 0x20);
+}
+
 int bga_demo() {
     init_video();
 
@@ -57,9 +123,12 @@ int bga_demo() {
 }
 
 int txt() {
-    /* Disable BGA and return to VGA text mode */
+    /* Disable BGA controller */
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, 0);
+
+    /* Reprogram VGA registers back to text mode */
+    write_registers(text_mode_80x25);
 
     clear_screen();
     return 0;
