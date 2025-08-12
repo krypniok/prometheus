@@ -86,3 +86,6 @@ void hexdump(void *ptr, size_t size);
 void printHexByte(unsigned char c);
 
 void print_registers();
+
+int setpal();
+int get_offset(int col, int row);
