@@ -143,6 +143,9 @@ int txt() {
     /* Reprogram VGA registers back to text mode */
     write_registers(text_mode_80x25);
 
+    /* Reinitialise VGA state after mode switch */
+    init_video();
+
     load_vga_font(font8x16, 16);
 
     /* Reload default palette and console state */
