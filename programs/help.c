@@ -16,6 +16,7 @@ void help() {
     printf("ll_main        - linked list demo\n");
     printf("setpal         - set palette\n");
     printf("bga_demo       - graphics demo\n");
+    printf("test_framebuffer- test framebuffer access\n");
     printf("txt            - return to text mode (after bga_demo)\n");
     printf("snake_main     - snake game\n");
     printf("sb16_demo      - SoundBlaster test\n");

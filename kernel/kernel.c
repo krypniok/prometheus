@@ -634,6 +634,7 @@ void execute_command(char *input) {
     CALL_FUNCTION(ll_main)
     CALL_FUNCTION(setpal)
     CALL_FUNCTION(bga_demo)
+    CALL_FUNCTION(test_framebuffer)
     CALL_FUNCTION(txt)
     CALL_FUNCTION(snake_main)
     CALL_FUNCTION(sb16_demo)

@@ -92,6 +92,39 @@ static void write_registers(unsigned char *regs) {
     port_byte_out(0x3C0, 0x20);
 }
 
+int test_framebuffer() {
+    volatile uint32_t *lfb = map_framebuffer(0xE0000000, 0xE0000000, 4 * 1024 * 1024);
+    if (lfb == NULL_POINTER) {
+        printf("Framebuffer mapping failed\n");
+        return -1;
+    }
+
+    struct {
+        uint32_t offset;
+        uint32_t pattern;
+    } tests[] = {
+        {0x0,    0xDEADBEEF},
+        {0x1000, 0xCAFEBABE},
+        {0x2000, 0x12345678},
+    };
+
+    for (int i = 0; i < 3; i++) {
+        lfb[tests[i].offset / 4] = tests[i].pattern;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        uint32_t val = lfb[tests[i].offset / 4];
+        if (val != tests[i].pattern) {
+            printf("Framebuffer test failed at offset 0x%X: wrote 0x%X, read 0x%X\n",
+                   tests[i].offset, tests[i].pattern, val);
+            return -1;
+        }
+    }
+
+    printf("Framebuffer test passed\n");
+    return 0;
+}
+
 int bga_demo() {
     init_video();
 
