@@ -78,10 +78,9 @@ static void write_registers(unsigned char *regs) {
 
     /* AC */
     for (i = 0; i < 21; i++) {
-        /* Reset flip-flop before each attribute controller access */
+        /* Reset flip-flop, then send index and data */
         port_byte_in(0x3DA);
         port_byte_out(0x3C0, i);
-        port_byte_in(0x3DA);
         port_byte_out(0x3C0, *regs++);
     }
 
