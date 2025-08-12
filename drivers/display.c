@@ -36,7 +36,10 @@ int setpal() {
         port_byte_out(0x03C9, i * 16); // Blauwert (graduell anpassen)
     }
 
-    // Deine Farben sind jetzt gesetzt!
+    // Reset console defaults after changing the palette
+    g_ConsoleColor = WHITE_ON_BLACK;
+    g_ConsoleX = 0;
+    g_ConsoleY = 0;
 
     return 0;
 }

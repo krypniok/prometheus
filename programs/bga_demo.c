@@ -137,9 +137,15 @@ int txt() {
     /* Reprogram VGA registers back to text mode */
     write_registers(text_mode_80x25);
 
+    /* Reload default palette and console state */
+    setpal();
+
+    /* Clear the screen and reposition the cursor */
     clear_screen();
+    set_cursor(get_offset(0, 0));
     showcursor();
-    printf("%c ", 0x10);
+
+    printf("Text mode restored\n");
     return 0;
 }
 
