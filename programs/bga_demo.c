@@ -3,6 +3,8 @@
 #include "../drivers/video.h"
 #include "../kernel/util.h"
 
+void showcursor();
+
 #define BGA_INDEX_PORT 0x1CE
 #define BGA_DATA_PORT  0x1CF
 
@@ -135,6 +137,8 @@ int txt() {
     write_registers(text_mode_80x25);
 
     clear_screen();
+    showcursor();
+    printf("%c ", 0x10);
     return 0;
 }
 
