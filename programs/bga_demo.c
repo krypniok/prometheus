@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "../drivers/ports.h"
 #include "../drivers/display.h"
 #include "../drivers/video.h"
@@ -19,6 +20,8 @@ int txt();
 
 #define BGA_ENABLED        0x01
 #define BGA_LFB_ENABLED    0x40
+
+static bool bga_active = false;
 
 /*
  * VGA register setup taken from the OSDev wiki to switch the card back
@@ -117,6 +120,7 @@ int bga_demo() {
     /* Enable display with LFB */
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, BGA_ENABLED | BGA_LFB_ENABLED);
+    bga_active = true;
 
     if (framebuffer == NULL_POINTER) {
         if (map_framebuffer(0xE0000000, 0xE0000000, width * height * (bpp / 8)) == NULL_POINTER) {
@@ -140,13 +144,19 @@ int bga_demo() {
     return 0;
 }
 
+/*
+ * Return to VGA text mode after bga_demo() has enabled graphics.
+ * If graphics mode isn't active, this just resets the console state.
+ */
 int txt() {
-    /* Disable BGA controller */
-    port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
-    port_word_out(BGA_DATA_PORT, 0);
+    if (bga_active) {
+        /* Disable BGA controller */
+        port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
+        port_word_out(BGA_DATA_PORT, 0);
 
-    /* Reprogram VGA registers back to text mode */
-    write_registers(text_mode_80x25);
+        /* Reprogram VGA registers back to text mode */
+        write_registers(text_mode_80x25);
+    }
 
     /* Reinitialise VGA state after mode switch */
     init_video();
@@ -162,6 +172,7 @@ int txt() {
     showcursor();
 
     printf("Text mode restored\n");
+    bga_active = false;
     return 0;
 }
 
