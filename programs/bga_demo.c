@@ -22,6 +22,12 @@ int bga_demo() {
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, 0);
 
+    /* Set linear frame buffer address to 0xE0000000 */
+    port_word_out(BGA_INDEX_PORT, 0x09);
+    port_word_out(BGA_DATA_PORT, 0x0000);
+    port_word_out(BGA_INDEX_PORT, 0x0A);
+    port_word_out(BGA_DATA_PORT, 0xE000);
+
     /* Set resolution */
     port_word_out(BGA_INDEX_PORT, BGA_REG_XRES);
     port_word_out(BGA_DATA_PORT, width);
@@ -34,12 +40,7 @@ int bga_demo() {
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, BGA_ENABLED | BGA_LFB_ENABLED);
 
-    /* Determine linear frame buffer address */
-    port_word_out(BGA_INDEX_PORT, 0x09);
-    uint16_t lfb_low = port_word_in(BGA_DATA_PORT);
-    port_word_out(BGA_INDEX_PORT, 0x0A);
-    uint16_t lfb_high = port_word_in(BGA_DATA_PORT);
-    uint32_t *lfb = (uint32_t *)(((uint32_t)lfb_high << 16) | lfb_low);
+    uint32_t *lfb = (uint32_t *)0xE0000000;
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
             uint8_t r = (x * 255) / width;
@@ -53,9 +54,13 @@ int bga_demo() {
 }
 
 int txt() {
-    /* Disable BGA and return to text mode */
+    /* Disable BGA and return to VGA text mode */
     port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
     port_word_out(BGA_DATA_PORT, 0);
+
+    /* BIOS call to set 80x25 text mode */
+    asm volatile("mov $0x0003, %%ax; int $0x10" ::: "ax");
+
     clear_screen();
     return 0;
 }
