@@ -5,14 +5,15 @@ RAMFILE ramdisk[MAX_FILES];
 int numFiles = 0;
 
 RAMFILE *ramdisk_fopen(const char *filename, const char *mode) {
+    char m = mode[0];
     // Überprüfen, ob der Dateiname bereits vorhanden ist
     for (int i = 0; i < numFiles; i++) {
         if (strcmp(filename, ramdisk[i].filename) == 0) {
-            if (strcmp(mode, "r") == 0 || strcmp(mode, "a") == 0) {
+            if (m == 'r' || m == 'a') {
                 // Wenn im Lesemodus oder Anhängemodus geöffnet wird,
                 // gibt die vorhandene Datei zurück, ohne ihren Inhalt zu löschen.
                 return (RAMFILE *)&ramdisk[i];
-            } else if (strcmp(mode, "w") == 0) {
+            } else if (m == 'w') {
                 // Wenn im Schreibmodus (w) geöffnet wird, lösche den Inhalt der Datei.
                 RAMFILE *file = &ramdisk[i];
                 file->size = 0;
@@ -26,12 +27,12 @@ RAMFILE *ramdisk_fopen(const char *filename, const char *mode) {
         return NULL;
     }
 
-    if (strcmp(mode, "r") == 0 || strcmp(mode, "w") == 0 || strcmp(mode, "a") == 0) {
+    if (m == 'r' || m == 'w' || m == 'a') {
         RAMFILE *file = &ramdisk[numFiles++];
         strncpy(file->filename, filename, sizeof(file->filename));
         file->size = 0;
         // Setzen Sie den Modus der Datei entsprechend dem angegebenen Modus
-        file->mode = mode[0]; // Nehmen Sie den ersten Buchstaben des Modus-Strings
+        file->mode = m; // Nehmen Sie den ersten Buchstaben des Modus-Strings
         return (RAMFILE *)file;
     }
 

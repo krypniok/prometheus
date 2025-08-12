@@ -5,7 +5,7 @@ typedef struct {
     char filename[32];
     char content[MAX_FILE_SIZE];
     size_t size;
-    int mode;
+    char mode;
 } RAMFILE;
 
 RAMFILE* ramdisk_fopen(const char *filename, const char *mode);
