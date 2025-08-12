@@ -16,3 +16,9 @@ void print_dynamic_mem();
 void *mem_alloc(size_t size);
 
 void mem_free(void *p);
+
+void init_paging();
+
+void *map_framebuffer(uint32_t phys, uint32_t virt, size_t size);
+
+extern volatile uint32_t *framebuffer;
