@@ -4,10 +4,6 @@
 #include "../drivers/display.h"
 #include "util.h"
 
-#define PAGE_SIZE 4096
-#define PAGE_PRESENT 0x1
-#define PAGE_WRITE 0x2
-
 static uint32_t page_directory[1024] __attribute__((aligned(PAGE_SIZE)));
 static uint32_t first_page_table[1024] __attribute__((aligned(PAGE_SIZE)));
 static uint32_t fb_page_table[1024] __attribute__((aligned(PAGE_SIZE)));
@@ -31,11 +27,15 @@ void init_paging() {
 void *map_framebuffer(uint32_t phys, uint32_t virt, size_t size) {
     uint32_t dir_index = virt >> 22;
     uint32_t table_index = (virt >> 12) & 0x3FF;
-    page_directory[dir_index] = ((uint32_t)fb_page_table) | PAGE_PRESENT | PAGE_WRITE;
+    page_directory[dir_index] = ((uint32_t)fb_page_table) |
+                                PAGE_PRESENT | PAGE_WRITE |
+                                PAGE_WRITE_THROUGH | PAGE_CACHE_DISABLE;
 
     size_t pages = (size + PAGE_SIZE - 1) / PAGE_SIZE;
     for (size_t i = 0; i < pages; i++) {
-        fb_page_table[table_index + i] = (phys + i * PAGE_SIZE) | PAGE_PRESENT | PAGE_WRITE;
+        fb_page_table[table_index + i] = (phys + i * PAGE_SIZE) |
+                                         PAGE_PRESENT | PAGE_WRITE |
+                                         PAGE_WRITE_THROUGH | PAGE_CACHE_DISABLE;
     }
     framebuffer = (volatile uint32_t *)virt;
     return (void *)virt;

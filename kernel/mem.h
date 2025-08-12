@@ -5,6 +5,13 @@
 
 #define NULL_POINTER ((void*)0)
 
+// Page table/directory entry flags
+#define PAGE_SIZE 4096
+#define PAGE_PRESENT 0x1
+#define PAGE_WRITE 0x2
+#define PAGE_WRITE_THROUGH 0x8
+#define PAGE_CACHE_DISABLE 0x10
+
 void memory_copy(uint8_t *source, uint8_t *dest, uint32_t nbytes);
 
 void init_dynamic_mem();
