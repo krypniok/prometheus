@@ -93,9 +93,39 @@ static void write_registers(unsigned char *regs) {
 }
 
 int test_framebuffer() {
-    volatile uint32_t *lfb = map_framebuffer(0xE0000000, 0xE0000000, 4 * 1024 * 1024);
+    init_video();
+
+    uint16_t width = 800;
+    uint16_t height = 600;
+    uint16_t bpp = 32;
+
+    /* Disable display */
+    port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
+    port_word_out(BGA_DATA_PORT, 0);
+
+    /* Set linear frame buffer address to 0xE0000000 */
+    port_word_out(BGA_INDEX_PORT, 0x09);
+    port_word_out(BGA_DATA_PORT, 0x0000);
+    port_word_out(BGA_INDEX_PORT, 0x0A);
+    port_word_out(BGA_DATA_PORT, 0xE000);
+
+    /* Set resolution */
+    port_word_out(BGA_INDEX_PORT, BGA_REG_XRES);
+    port_word_out(BGA_DATA_PORT, width);
+    port_word_out(BGA_INDEX_PORT, BGA_REG_YRES);
+    port_word_out(BGA_DATA_PORT, height);
+    port_word_out(BGA_INDEX_PORT, BGA_REG_BPP);
+    port_word_out(BGA_DATA_PORT, bpp);
+
+    /* Enable display with LFB */
+    port_word_out(BGA_INDEX_PORT, BGA_REG_ENABLE);
+    port_word_out(BGA_DATA_PORT, BGA_ENABLED | BGA_LFB_ENABLED);
+    bga_active = true;
+
+    volatile uint32_t *lfb = map_framebuffer(0xE0000000, 0xE0000000, width * height * (bpp / 8));
     if (lfb == NULL_POINTER) {
         printf("Framebuffer mapping failed\n");
+        txt();
         return -1;
     }
 
@@ -117,11 +147,13 @@ int test_framebuffer() {
         if (val != tests[i].pattern) {
             printf("Framebuffer test failed at offset 0x%X: wrote 0x%X, read 0x%X\n",
                    tests[i].offset, tests[i].pattern, val);
+            txt();
             return -1;
         }
     }
 
     printf("Framebuffer test passed\n");
+    txt();
     return 0;
 }
 
