@@ -4,8 +4,10 @@
 #include "../kernel/util.h"
 #include "../kernel/mem.h"
 #include "../drivers/font8x16.h"
+#include "../drivers/keyboard.h"
 
 void showcursor();
+int txt();
 
 #define BGA_INDEX_PORT 0x1CE
 #define BGA_DATA_PORT  0x1CF
@@ -126,7 +128,10 @@ int bga_demo() {
             lfb[y * width + x] = (r << 16) | (g << 8) | b;
         }
     }
-
+    while (getkey() != SC_ESC) {
+        // wait for ESC key
+    }
+    txt();
     return 0;
 }
 
