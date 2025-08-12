@@ -52,18 +52,18 @@ endif
 # --- Lauf-Flags (stdvga => BGA/VBE; LFB via 0x01CE/0x01CF im Kernel setzen) ---
 RUNFLAGS := -m 1024 -rtc base=2023-08-03T12:34:56 -vga std $(CPU32)
 
-# --- Run: 1.44MB Floppy-Image booten, test.pc injizieren/extrahieren (wie bei dir) ---
+# --- Run: 32MB HDD-Image booten, test.pc injizieren/extrahieren ---
 run: os-image.bin
-	dd if=/dev/zero of=disk_image.img bs=512 count=2880
+	dd if=/dev/zero of=disk_image.img bs=512 count=65536
 	dd if=os-image.bin of=disk_image.img conv=notrunc
 	dd if=test.pc of=disk_image.img bs=1 seek=1048576 conv=notrunc
 	@if [ -z "$(QEMU)" ]; then echo "QEMU fehlt (install qemu-system-x86)"; exit 127; fi
-	$(QEMU) $(RUNFLAGS) $(SOUND) -drive file=disk_image.img,if=floppy,format=raw -boot a
+	$(QEMU) $(RUNFLAGS) $(SOUND) -drive file=disk_image.img,format=raw,if=ide -boot c
 	dd if=disk_image.img of=test.pc bs=1 skip=1048576 count=951
 
 rerun:
 	@if [ -z "$(QEMU)" ]; then echo "QEMU fehlt (install qemu-system-x86)"; exit 127; fi
-	$(QEMU) $(RUNFLAGS) $(SOUND) -drive file=disk_image.img,if=floppy,format=raw -boot a
+	$(QEMU) $(RUNFLAGS) $(SOUND) -drive file=disk_image.img,format=raw,if=ide -boot c
 
 echo: os-image.bin
 	xxd $<
@@ -74,7 +74,7 @@ kernel.elf: boot/kernel_entry.o ${OBJ_FILES}
 
 debug: os-image.bin kernel.elf
 	@if [ -z "$(QEMU)" ]; then echo "QEMU fehlt (install qemu-system-x86)"; exit 127; fi
-	$(QEMU) $(RUNFLAGS) $(SOUND) -s -S -d guest_errors,int -drive file=disk_image.img,if=floppy,format=raw -boot a &
+	$(QEMU) $(RUNFLAGS) $(SOUND) -s -S -d guest_errors,int -drive file=disk_image.img,format=raw,if=ide -boot c &
 	gdb -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 test-env:
