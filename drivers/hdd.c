@@ -25,16 +25,17 @@ void read_from_disk(uint32_t lba, uint8_t* buffer, uint32_t size_in_bytes) {
     port_byte_out(lba_high_port, (lba >> 16) & 0xFF);
     port_byte_out(command_port, 0x20); // Befehl zum Lesen von Sektoren
 
-    // Warten, bis der Controller bereit ist
-    while ((port_byte_in(command_port) & 0x80) != 0);
-
     // Daten von der Festplatte in den Speicher kopieren
     for (uint32_t i = 0; i < count; i++) {
+        uint8_t status;
+        do {
+            status = port_byte_in(command_port);
+        } while ((status & 0x80) || !(status & 0x08)); // BSY oder kein DRQ
+
         for (uint16_t j = 0; j < 256; j++) {
             buffer16[j] = port_word_in(data_port);
         }
         buffer16 += 256;
-        while ((port_byte_in(command_port) & 0x80) != 0);
     }
 }
 
@@ -64,15 +65,16 @@ void write_to_disk(uint32_t lba, uint8_t* buffer, uint32_t size_in_bytes) {
     port_byte_out(lba_high_port, (lba >> 16) & 0xFF);
     port_byte_out(command_port, 0x30); // Befehl zum Schreiben von Sektoren
 
-    // Warten, bis der Controller bereit ist
-    while ((port_byte_in(command_port) & 0x80) != 0);
-
     // Daten von Speicher auf die Festplatte kopieren
     for (uint32_t i = 0; i < count; i++) {
+        uint8_t status;
+        do {
+            status = port_byte_in(command_port);
+        } while ((status & 0x80) || !(status & 0x08));
+
         for (uint16_t j = 0; j < 256; j++) {
             port_word_out(data_port, buffer16[j]);
         }
         buffer16 += 256;
-        while ((port_byte_in(command_port) & 0x80) != 0);
     }
 }
