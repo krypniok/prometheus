@@ -1,5 +1,6 @@
 #include "../drivers/ports.h"
 #include "../drivers/display.h"
+#include "../kernel/math.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -30,11 +31,17 @@ void sb16_demo() {
     }
     printf("SB16 ready\n");
 
-    static unsigned char sample[] = {0x80, 0xFF, 0x80, 0x00, 0x80, 0xFF, 0x80, 0x00};
+    const int sample_rate = 8000;
+    const int samples = sample_rate; /* 1 second */
+    static unsigned char wave[8000];
+    for (int i = 0; i < samples; i++) {
+        double t = (double)i / sample_rate;
+        wave[i] = 128 + (unsigned char)(127 * sin(2 * PI * 440.0 * t));
+    }
 
     port_byte_out(0x22C, 0x10);
-    for (size_t i = 0; i < sizeof(sample); i++) {
-        port_byte_out(0x22C, sample[i]);
+    for (int i = 0; i < samples; i++) {
+        port_byte_out(0x22C, wave[i]);
         sb16_delay();
     }
 }
